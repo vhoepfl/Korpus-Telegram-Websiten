@@ -26,10 +26,10 @@ Es gibt die folgenden Möglichkeiten, relevante Wörter zu identifizieren (Beipi
 
     Implementiert mittels Z-Score: Jede Bewegung eines Worts relativ zu einem Zielwort wird skaliert mittels der Standardabweichung. 
     Standardabweichung ist vorzeichenlos, misst also nur Stärke der Bewegung, Richtung ist egal. Da alle Wörter mit Bewegung in Richtung Zielwort ein positives Vorzeichen erhalten, besitzen Wörter, die sich überdurchschnittlich in Richtung Zielwort bewegen, die höchsten Scores. <br>
-    **Globale Standardabweichung:** Bewegung aller Wörter relativ zu Zielwort t<br>
-    Diese Metrik findet generell Wörter, die sich überdurchschnittlich an Zielwort t annähern. <br>
-    **Lokale Standardabweichung:**  Für jedes Wort w: Bewegung der k (mit k=50) nächsten Wörter für w. <br>
-    Damit findet diese Metrik Wörter w, die sich aus ihrer lokalen Umgebung entfernen, und eine neue, kontextspezifische Bedeutung näher an Zielwort t annehmen. <br><br>
+    - **Globale Standardabweichung:** Bewegung aller Wörter relativ zu Zielwort t<br>
+        Diese Metrik findet generell Wörter, die sich überdurchschnittlich an Zielwort t annähern. <br>
+    - **Lokale Standardabweichung:**  Für jedes Wort w: Bewegung der k (mit k=50) nächsten Wörter für w. <br>
+        Damit findet diese Metrik Wörter w, die sich aus ihrer lokalen Umgebung entfernen, und eine neue, kontextspezifische Bedeutung näher an Zielwort t annehmen. <br>
     
     Mithilfe des Parameters `loc-glob-ratio`(funktioniert mit Werten von 0-1) kann das Verhältnis von globalem zu lokalem Kontext eingestellt werden. Für nur globalen Kontext auf 0 setzen, für nur lokalen Kontext auf 1. Standardeinstellung, falls dieser Parameter wegelassen, ist 0.7. Nur globalen Kontext zu verwenden, ist *massiv* schneller als eine Mischung oder nur lokale Information. <br>
 
