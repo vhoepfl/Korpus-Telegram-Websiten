@@ -13,9 +13,9 @@ Finetuning eines vortrainierten fastText-Modells: `./fasttext skipgram -input tr
 
 *@Laura: Die Embeddings sind mind. 5GB groß, und da sowohl das pretrained als auch das gefinetunte Embedding geladen werden muss, wird das am Laptop vermutlich recht schwierig, daher sind die hier nicht mit hochgeladen.*
 
-Es gibt die folgenden Möglichkeiten, relevante Wörter zu identifizieren: 
+Es gibt die folgenden Möglichkeiten, relevante Wörter zu identifizieren (Beipiele jeweils im Ordner *Beispiele*): 
 - **SHIFT:** Wörter mit größter Bedeutungsverschiebung
-    In der Praxis vermutlich nahezu nutzlos, da Verschiebungen in hochdimensionalen Räumen sehr schnell sehr groß werden können, ohne dass dies auf signifikante semantische Verschiebungen hindeutet. 
+    In der Praxis vermutlich nicht besonders hilfreich, da damit der Suchraum nicht auf Feindbilder o.ä. beschränkt werden kann, sondern nur charakteristische Wörter ausgegeben werden. 
     Könnte ausgeführt werden mit `python measure_shifts.py --mode=shift <pretrained_embeddings>.bin <finetuned_embeddings>.bin -k 200 -o test_shift.csv`<br
 
 - **TOWARDS:** Wörter, die sich am stärksten an ein gegebenes Zielwort annähern. 
@@ -32,7 +32,6 @@ Es gibt die folgenden Möglichkeiten, relevante Wörter zu identifizieren:
     Damit findet diese Metrik Wörter w, die sich aus ihrer lokalen Umgebung entfernen, und eine neue, kontextspezifische Bedeutung näher an Zielwort t annehmen. <br><br>
     
     Mithilfe des Parameters `loc-glob-ratio`(funktioniert mit Werten von 0-1) kann das Verhältnis von globalem zu lokalem Kontext eingestellt werden. Für nur globalen Kontext auf 0 setzen, für nur lokalen Kontext auf 1. Standardeinstellung, falls dieser Parameter wegelassen, ist 0.7. Nur globalen Kontext zu verwenden, ist *massiv* schneller als eine Mischung oder nur lokale Information. <br>
-
 
 
 
