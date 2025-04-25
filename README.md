@@ -23,11 +23,11 @@ Es gibt die folgenden Möglichkeiten, relevante Wörter zu identifizieren:
         ` python measure_shift.py <pretrained_embeddings>.bin <finetuned_embeddings>.bin --mode toward --targets <Zielwort 1> <Zielwort 2> --min-count 20 5 -k 100 -o <Output-Dateiname>`
     - Zielwörter in Datei: 
         `python measure_shift.py <pretrained_embeddings>.bin <finetuned_embeddings>.bin --mode toward --targets-file <target_file> --min-count 20 5 -k 100 -o <Output-Dateiname>`
+
     Implementiert mittels Z-Score: Jede Bewegung eines Worts relativ zu einem Zielwort wird skaliert mittels der Standardabweichung. 
     Standardabweichung ist vorzeichenlos, misst also nur Stärke der Bewegung, Richtung ist egal. Da alle Wörter mit Bewegung in Richtung Zielwort ein positives Vorzeichen erhalten, besitzen Wörter, die sich überdurchschnittlich in Richtung Zielwort bewegen, die höchsten Scores. <br>
-    Konkret wird die Richtung der Bewegung per Kosinusähnlichkeit gemessen, d.h. nicht mit einem echten Richtungsmaß wie euklidischer Distanz, da das in einem hochdimensionalen Raum wie 300-dimensionalem Embedding-space nicht mehr gut funktioniert. 
     **Globale Standardabweichung:** Bewegung aller Wörter relativ zu Zielwort t<br>
-    Diese Metrik findet generell Wörter, die sich überdurchschnittlich an Zielwort t annähern. 
+    Diese Metrik findet generell Wörter, die sich überdurchschnittlich an Zielwort t annähern. <br>
     **Lokale Standardabweichung:**  Für jedes Wort w: Bewegung der k (mit k=50) nächsten Wörter für w. <br>
     Damit findet diese Metrik Wörter w, die sich aus ihrer lokalen Umgebung entfernen, und eine neue, kontextspezifische Bedeutung näher an Zielwort t annehmen. <br><br>
     
