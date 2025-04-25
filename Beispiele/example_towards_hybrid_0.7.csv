@@ -1,4 +1,4 @@
-rank, score, target
+rank, word, score, target
 1,69005,0.417466,Marseille
 2,aix,0.321703,Marseille
 3,75009,0.313900,Marseille
