@@ -219,7 +219,7 @@ def main():
             raise SystemExit("--mode toward braucht Zielwörter via --targets oder --targets-file")
 
         moved_to = targets
-        header = ("rank", "word", "delta_cosine")
+        header = ("rank", "word", "score", "target")
 
         heap_dict = compute_towards_hybrid_local_global(
             base,
