@@ -9,24 +9,32 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Iterable, List
 merged_phrases = set()
+import regex
 
-
-def cleanup(text: str, re_cleanup: bool, lowercase: bool) -> str:
+def cleanup(text: str, re_cleanup: bool, lowercase: bool, include_emojis: bool) -> str:
     if lowercase:
         text = text.lower()
     if re_cleanup:
-        # Remove link pleaceholders, no value for text
-        text = re.sub(r"\[link\]", ' ', text)
+        # Remove link placeholders, no value for text
+        text = re.sub(r"\[link\]", " ", text)
+
         # Replace punctuation (except normal dot) with whitespace, keep words+digits
-        text = re.sub(r"[^\w\n\d#]+", " ", text)
+        if include_emojis: 
+            emoji = regex.compile("([\p{Extended_Pictographic}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]+)")
+            text = emoji.sub(r" \1 ", text)
+            non_emoji = regex.compile("[^\p{Extended_Pictographic}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}\p{Letter}\p{Decimal_Number}#]+")
+            text = non_emoji.sub(" ", text)
+        else: 
+            text = re.sub(r"[^\w\n\d#]+", " ", text)
         # delete leading/trailing spaces per line
         text = re.sub(r"^\s+|\s+(?=\n)", "", text, flags=re.MULTILINE)
+
     # collapse multi‑spaces (but not newlines) to single space
     text = re.sub(r"[^\S]+", " ", text)
     return text
 
 
-def extract_text_from_xml(file_path: str | os.PathLike, do_cleanup:bool) -> List[str]:
+def extract_text_from_xml(file_path: str | os.PathLike, do_cleanup:bool, include_emojis:bool) -> List[str]:
     """Parst <body><text>…</text></body> XML und säubert Zeilen."""
     try:
         tree = ET.parse(file_path)
@@ -37,9 +45,9 @@ def extract_text_from_xml(file_path: str | os.PathLike, do_cleanup:bool) -> List
 
         print(f" {file_path} erfolgreich gelesen, enthält {len([1 for e in elems if e.text])} einzelne Texte")
         if do_cleanup:
-            return [cleanup(e.text, re_cleanup=True, lowercase=True) for e in elems if e.text]
+            return [cleanup(e.text, re_cleanup=True, lowercase=True, include_emojis=include_emojis) for e in elems if e.text]
         else: 
-            return [cleanup(e.text, re_cleanup=False, lowercase=False) for e in elems if e.text]
+            return [cleanup(e.text, re_cleanup=False, lowercase=False, include_emojis=include_emojis) for e in elems if e.text]
 
     except Exception as exc:  # noqa: BLE001
         print(f"[WARN] {file_path} konnte nicht gelesen werden: {exc}")
@@ -146,12 +154,12 @@ def main():
     ap.add_argument("folder", help="Path to folder with XML files")
     ap.add_argument("--out_corpus", default="corpus_cleaned.txt")
     ap.add_argument("--do_cleanup", type=str, default="yes")
+    ap.add_argument("--include_emojis", type=str, default="yes")
     ap.add_argument("--passes", type=int, default=2, help="# of phrase passes (2‑4 sinnvoll)")
     ap.add_argument("--delta", type=float, default=5.0, help="Discount coefficient δ")
     ap.add_argument("--thresholds", nargs="*", type=float, help="Phrase threshold per pass")
     args = ap.parse_args()
 
-    # 1) load & cleanup xml → raw sentences
     if args.do_cleanup.lower() == "yes": 
         do_cleanup = True
     elif args.do_cleanup.lower() == "no": 
@@ -159,9 +167,17 @@ def main():
     else: 
         print("Please enter either 'yes' or 'no' for --do_cleanup")
 
+    if args.include_emojis.lower() == "yes": 
+        include_emojis = True
+    elif args.include_emojis.lower() == "no": 
+        include_emojis = False
+    else: 
+        print("Please enter either 'yes' or 'no' for --include_emojis")
+
+
     raw_texts: list[str] = []
     for fp in iter_xml_files(args.folder):
-        raw_texts.extend(extract_text_from_xml(fp, do_cleanup=do_cleanup))
+        raw_texts.extend(extract_text_from_xml(fp, do_cleanup=do_cleanup, include_emojis=include_emojis))
     print(f"[INFO] {len(raw_texts)} Text‑Blöcke geladen")
 
     print("do cleanup of text: ", args.do_cleanup)
