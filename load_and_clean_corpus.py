@@ -17,6 +17,8 @@ def cleanup(text: str, re_cleanup: bool, lowercase: bool, include_emojis: bool) 
     if re_cleanup:
         # Remove link placeholders, no value for text
         text = re.sub(r"\[link\]", " ", text)
+        # Remove email adresses
+        text = re.sub(r"\S+@\S+\.\S+", " ", text)
 
         # Replace punctuation (except normal dot) with whitespace, keep words+digits
         if include_emojis: 
@@ -152,7 +154,7 @@ def save_merged(outfile):
 def main():
     ap = argparse.ArgumentParser(description="Build phrased corpus from XML folder.")
     ap.add_argument("folder", help="Path to folder with XML files")
-    ap.add_argument("--out_corpus", default="corpus_cleaned.txt")
+    ap.add_argument("--out_corpus", default="corpus_cleaned_with_emojis.txt")
     ap.add_argument("--do_cleanup", type=str, default="yes")
     ap.add_argument("--include_emojis", type=str, default="yes")
     ap.add_argument("--passes", type=int, default=2, help="# of phrase passes (2‑4 sinnvoll)")
