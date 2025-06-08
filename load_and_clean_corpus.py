@@ -22,14 +22,18 @@ def cleanup(text: str, re_cleanup: bool, lowercase: bool, include_emojis: bool) 
 
         # Replace punctuation (except normal dot) with whitespace, keep words+digits
         if include_emojis: 
+            def emoji_filter(match):
+                ch = match.group(1)
+                return f" {ch} " if ch not in {"#", "*"} else ch  # kein Space-Hack für Hashtag oder Stern
+
             emoji = regex.compile("([\p{Extended_Pictographic}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}]+)")
-            text = emoji.sub(r" \1 ", text)
+            text = emoji.sub(emoji_filter, text)
             non_emoji = regex.compile("[^\p{Extended_Pictographic}\p{Emoji_Modifier_Base}\p{Emoji_Modifier}\p{Emoji_Component}\p{Letter}\p{Decimal_Number}#]+")
             text = non_emoji.sub(" ", text)
         else: 
             text = re.sub(r"[^\w\n\d#]+", " ", text)
         # delete leading/trailing spaces per line
-        text = re.sub(r"^\s+|\s+(?=\n)", "", text, flags=re.MULTILINE)
+        text = re.sub(r"^\s+|\s+$", "", text)
 
     # collapse multi‑spaces (but not newlines) to single space
     text = re.sub(r"[^\S]+", " ", text)
